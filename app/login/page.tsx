@@ -10,5 +10,3 @@ export default function Page() {
         <p style={{textAlign:'center',marginTop:'16px'}}><a href="/" style={{color:'#999',fontSize:'14px'}}>← Back to Home</a></p>
       </div>
     </div>
-  )
-}
