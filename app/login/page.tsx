@@ -1,13 +1,12 @@
-export default function Page() {
-  return (
-    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <div style={{border:'1px solid #ddd',padding:'24px',borderRadius:'12px',width:'320px'}}>
-        <h2>Login</h2>
-        <input placeholder="Email" style={{width:'100%',padding:'10px',margin:'8px 0',border:'1px solid #ccc',borderRadius:'6px'}} />
-        <input type="password" placeholder="Password" style={{width:'100%',padding:'10px',margin:'8px 0',border:'1px solid #ccc',borderRadius:'6px'}} />
-        <button style={{width:'100%',padding:'10px',background:'black',color:'white',borderRadius:'6px',marginTop:'10px'}}>Login</button>
-        <p style={{textAlign:'center',marginTop:'12px'}}><a href="/">Back to Home</a></p>
-      </div>
-    </div>
-  )
-}
+export default function Page(){
+return(
+<div style={{display:'flex',justifyContent:'center',alignItems:'center',minHeight:'100vh'}}>
+<div style={{border:'1px solid #ddd',padding:'20px',borderRadius:'10px',width:'300px'}}>
+<h2>Login</h2>
+<input placeholder="Email" style={{width:'100%',padding:'8px',margin:'5px 0'}}/>
+<input type="password" placeholder="Password" style={{width:'100%',padding:'8px',margin:'5px 0'}}/>
+<button style={{width:'100%',padding:'8px',background:'black',color:'white',marginTop:'10px'}}>Login</button>
+<a href="/" style={{display:'block',textAlign:'center',marginTop:'10px'}}>Home</a>
+</div>
+</div>
+)}
