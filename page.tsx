@@ -1,66 +1,73 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 
-export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-  return (
-    <div style={{ minHeight: '100vh', background: '#f6fbfb' }}>
-      <div style={{ background: '#fff', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => setMenuOpen(true)} style={{ fontSize: '26px', background: 'none', border: 'none' }}>☰</button>
-        <div style={{ fontWeight: '800', display: 'flex', gap: '8px' }}>🌐 ACCOUNT SOLUTIONS HUB</div>
-        <button onClick={()=>setIsAdmin(!isAdmin)} style={{fontSize:'11px',padding:'6px 10px',borderRadius:'999px',border:'1px solid #0b8a7a',background:isAdmin?'#0b8a7a':'#fff',color:isAdmin?'#fff':'#0b8a7a'}}>{isAdmin ? 'ADMIN' : 'USER'}</button>
+export default function AuthPage(){
+  const [isSignup, setIsSignup] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("taiyehassan998@gmail.com");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleAuth(){
+    if(isSignup && password !== confirm){
+      alert("Passwords don't match!"); return;
+    }
+    setLoading(true);
+    try{
+      if(isSignup){
+        const { data, error } = await supabase.auth.signUp({
+          email, password,
+          options: { data: { full_name: name } }
+        });
+        if(error) throw error;
+        alert("Account created! Check email or click Login now.");
+        setIsSignup(false);
+      }else{
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if(error) throw error;
+        window.location.href = "/dashboard";
+      }
+    }catch(e:any){
+      alert(e.message);
+    }finally{ setLoading(false); }
+  }
+
+  return(
+    <div style={{maxWidth:'400px',margin:'20px auto',padding:'20px',fontFamily:'sans-serif'}}>
+      <p style={{textAlign:'center',color:'#666'}}>Start buying digital products in seconds.</p>
+      <div style={{display:'flex',background:'#f1f5f9',borderRadius:'999px',padding:'4px',marginBottom:'20px'}}>
+        <button onClick={()=>setIsSignup(false)} style={{flex:1,padding:'10px',borderRadius:'999px',border:'none',background:!isSignup?'#fff':'transparent',fontWeight:'600'}}>Login</button>
+        <button onClick={()=>setIsSignup(true)} style={{flex:1,padding:'10px',borderRadius:'999px',border:'none',background:isSignup?'#fff':'transparent',fontWeight:'700'}}>Sign up</button>
       </div>
-
-      <div style={{ padding: '30px', textAlign: 'center' }}>
-        <h2>Click ☰ to open drawer</h2>
-        <p>Top right button switches between USER menu and ADMIN menu</p>
-        <p>USER = Screenshot 1 | ADMIN = Screenshot 2</p>
-      </div>
-
-      {menuOpen && (
+      {isSignup && (
         <>
-          <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999 }}></div>
-          <div style={{ width: '280px', height: '100vh', background: '#fff', position: 'fixed', left: 0, top: 0, zIndex: 1000, padding: '20px', overflowY: 'auto', display:'flex', flexDirection:'column' }}>
-            <div style={{ fontWeight: '800', marginBottom: '24px' }}>🌐 {isAdmin ? <span style={{color:'#0b8a7a'}}>ADMIN</span> : 'ACCOUNT SOLUTIONS HUB'}</div>
-            {!isAdmin ? (
-              <>
-                <div style={{ background: '#e0f2f1', borderRadius: '12px', padding: '10px', color: '#0b8a7a', fontWeight: '600' }}>🏠 Home</div>
-                <Item href="/categories" icon="⊞" label="Categories" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin" icon="🛡️" label="Admin Dashboard" close={()=>setMenuOpen(false)}/>
-                <Item href="/wallet" icon="💳" label="Fund Wallet" close={()=>setMenuOpen(false)}/>
-                <Item href="/sms" icon="💬" label="SMS Verification" close={()=>setMenuOpen(false)}/>
-                <Item href="/orders" icon="📦" label="Orders" close={()=>setMenuOpen(false)}/>
-                <Item href="/transactions" icon="🕒" label="Transaction History" close={()=>setMenuOpen(false)}/>
-                <Item href="/profile" icon="👤" label="Profile" close={()=>setMenuOpen(false)}/>
-                <Item href="/rules" icon="📜" label="Rules & Regulations" close={()=>setMenuOpen(false)}/>
-                <div style={{flex:1}}></div>
-                <Link href="/logout" style={{color:'#e53935',textDecoration:'none',padding:'12px 0',borderTop:'1px solid #eee'}}>↪ Logout</Link>
-              </>
-            ) : (
-              <>
-                <p style={{fontSize:'12px',fontWeight:'700',color:'#666'}}>Management</p>
-                <Item href="/admin" icon="⊞" label="Dashboard" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/sms" icon="💬" label="SMS" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/users" icon="👥" label="Users" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/products" icon="📦" label="Products" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/orders" icon="🛒" label="Product Orders" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/revenue" icon="📈" label="Revenue" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/ban" icon="🚫" label="Ban" close={()=>setMenuOpen(false)}/>
-                <Item href="/admin/audit" icon="📋" label="Audit Logs" close={()=>setMenuOpen(false)}/>
-                <div style={{flex:1}}></div>
-                <Link href="/" onClick={()=>setMenuOpen(false)} style={{color:'#333',textDecoration:'none',padding:'10px 0'}}>← Back to app</Link>
-                <Link href="/logout" style={{color:'#e53935',textDecoration:'none',padding:'10px 0'}}>↪ Sign out</Link>
-              </>
-            )}
+          <label style={{fontWeight:'700'}}>Name</label>
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Taiye hassan" style={{width:'100%',padding:'14px',borderRadius:'999px',border:'1px solid #ddd',margin:'6px 0 14px'}}/>
+        </>
+      )}
+      <label style={{fontWeight:'700'}}>Email</label>
+      <input value={email} onChange={e=>setEmail(e.target.value)} style={{width:'100%',padding:'14px',borderRadius:'999px',border:'1px solid #ddd',margin:'6px 0 14px'}}/>
+      <label style={{fontWeight:'700'}}>Password</label>
+      <input type="password" value={password} onChange={e=>setPassword(e.target.value)} style={{width:'100%',padding:'14px',borderRadius:'999px',border:'1px solid #ddd',margin:'6px 0 14px'}}/>
+      {isSignup && (
+        <>
+          <label style={{fontWeight:'700'}}>Confirm password</label>
+          <input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} style={{width:'100%',padding:'14px',borderRadius:'999px',border:'1px solid #ddd',margin:'6px 0 14px'}}/>
+          <div style={{display:'flex',gap:'8px',margin:'10px 0'}}>
+            <input type="checkbox" defaultChecked/> <span style={{fontSize:'13px'}}>I agree to the <a href="#" style={{color:'#0b8a7a'}}>Terms & Privacy Policy</a></span>
           </div>
         </>
       )}
+      <button onClick={handleAuth} disabled={loading} style={{width:'100%',padding:'16px',borderRadius:'999px',border:'none',background:'linear-gradient(90deg,#0b8a7a,#2196F3)',color:'#fff',fontWeight:'700',fontSize:'16px',marginTop:'10px'}}>
+        {loading ? 'Please wait...' : (isSignup ? 'Create account' : 'Login')}
+      </button>
     </div>
-  );
-}
-function Item({href,icon,label,close}:any){
-  return <Link href={href} onClick={close} style={{display:'flex',gap:'12px',padding:'11px 4px',textDecoration:'none',color:'#222',fontSize:'14px'}}><span>{icon}</span>{label}</Link>
+  )
 }
