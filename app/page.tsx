@@ -65,7 +65,10 @@ export default function Home() {
         </div>
       </div>
 
-      <footer style={{textAlign:'center',padding:'40px',color:'#999',fontSize:'13px',borderTop:'1px solid #eee'}}>© 2026 AccountSolutions • Built by you on Vercel</footer>
-    </div>
-  )
+      <footer style={{textAlign:'center',padding:'40px',color:'#999',borderTop:'1px solid #eee'}}>
+<div>
+<p>© 2026 AccountSolutions</p>
+<p>Contact: <a href="mailto:acctsolutionhub@gmail.com" style={{color:'black',fontWeight:'bold'}}>acctsolutionhub@gmail.com</a></p>
+</div>
+</footer>
 }
